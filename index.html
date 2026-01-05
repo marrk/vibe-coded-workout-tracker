@@ -8,97 +8,94 @@
     <title>Elite Gym Partner</title>
     <style>
         :root { --blue: #3498db; --green: #27ae60; --bg: #000; --card: #111; --text-dim: #666; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: white; padding: 15px; max-width: 500px; margin: auto; touch-action: manipulation; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: white; padding: 15px; max-width: 500px; margin: auto; touch-action: manipulation; padding-bottom: 80px; }
         
+        /* Navigation */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #111; display: flex; border-top: 1px solid #333; z-index: 1000; }
+        .nav-item { flex: 1; padding: 15px; text-align: center; color: #666; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
+        .nav-item.active { color: var(--blue); }
+
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* Progress Page Styles */
+        .stat-card { background: var(--card); border-radius: 15px; padding: 15px; margin-bottom: 12px; border: 1px solid #222; }
+        .stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .stat-title { color: var(--blue); font-weight: bold; }
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .stat-box { text-align: center; font-size: 0.7rem; color: #888; }
+        .stat-box span { display: block; color: white; font-size: 1rem; font-weight: bold; margin-top: 4px; }
+
+        /* Reuse previous styles for Workout Page */
         .header-controls { display: flex; gap: 8px; margin-bottom: 15px; }
         select { background: #111; color: white; border: 1px solid #333; padding: 12px; border-radius: 10px; flex: 2; font-size: 0.9rem; }
         .toggle-group { display: flex; background: #222; border-radius: 10px; padding: 3px; flex: 2; border: 1px solid #333; }
-        .toggle-btn { flex: 1; border: none; background: none; color: #666; padding: 10px 5px; font-size: 0.7rem; font-weight: bold; border-radius: 8px; text-transform: uppercase; }
+        .toggle-btn { flex: 1; border: none; background: none; color: #666; padding: 10px 5px; font-size: 0.7rem; font-weight: bold; border-radius: 8px; }
         .toggle-btn.active { background: var(--blue); color: white; }
-
         .timeline { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 15px; margin-bottom: 15px; scrollbar-width: none; border-bottom: 1px solid #222; }
         .step { min-width: 100px; text-align: center; font-size: 0.65em; color: #444; border: 1px solid #222; padding: 10px; border-radius: 12px; flex-shrink: 0; }
         .step.active { color: var(--blue); border-color: var(--blue); background: rgba(52, 152, 219, 0.1); }
         .step.done { color: var(--green); border-color: var(--green); opacity: 0.5; }
-        .step-sets { display: block; font-weight: bold; margin-top: 4px; color: #888; }
-
         .card { background: var(--card); border-radius: 24px; padding: 20px; border: 1px solid #333; position: relative; overflow: hidden; }
         .ex-image-container { width: calc(100% + 40px); margin: -20px -20px 20px -20px; height: 160px; background: #222; }
         .ex-image-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
-        .ten-rm-badge { position: absolute; top: 150px; right: 20px; background: #f1c40f; color: #000; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.75rem; z-index: 10; }
-
-        .stepper-container { margin-bottom: 15px; }
-        .stepper-label { text-align: center; color: var(--text-dim); font-size: 0.7rem; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; }
-        .stepper-controls { display: flex; align-items: center; justify-content: space-between; background: #000; border-radius: 15px; padding: 4px; border: 1px solid #222; }
+        .stepper-controls { display: flex; align-items: center; justify-content: space-between; background: #000; border-radius: 15px; padding: 4px; border: 1px solid #222; margin-top:5px;}
         .step-btn { width: 50px; height: 50px; border-radius: 12px; border: none; background: #222; color: white; font-size: 1.4rem; }
         .step-value { font-size: 1.6rem; font-weight: bold; width: 90px; text-align: center; }
-
-        .btn-complete { background: var(--green); color: white; border: none; padding: 20px; width: 100%; border-radius: 16px; font-weight: bold; font-size: 1.2rem; margin-top: 10px; }
-        
+        .btn-complete { background: var(--green); color: white; border: none; padding: 20px; width: 100%; border-radius: 16px; font-weight: bold; font-size: 1.2rem; margin-top: 15px; }
         #timer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 100; }
         #timer-display { font-size: 10rem; font-weight: bold; color: var(--green); }
-        .btn-skip { background: transparent; border: 2px solid #333; color: #888; padding: 15px 40px; border-radius: 30px; font-size: 1.1rem; margin-top: 30px; }
     </style>
 </head>
 <body>
 
-    <div class="header-controls">
-        <select id="workoutSelect" onchange="initWorkout()">
-            <option value="pushA">Push A</option>
-            <option value="pullA">Pull A</option>
-            <option value="pushB">Push B</option>
-            <option value="pullB">Pull B</option>
-        </select>
-        <div class="toggle-group">
-            <button id="mode-free" class="toggle-btn active" onclick="setMode('free')">Free</button>
-            <button id="mode-mach" class="toggle-btn" onclick="setMode('mach')">Mach</button>
+    <div id="workout-page" class="page active">
+        <div class="header-controls">
+            <select id="workoutSelect" onchange="initWorkout()">
+                <option value="pushA">Push A</option><option value="pullA">Pull A</option>
+                <option value="pushB">Push B</option><option value="pullB">Pull B</option>
+            </select>
+            <div class="toggle-group">
+                <button id="mode-free" class="toggle-btn active" onclick="setMode('free')">Free</button>
+                <button id="mode-mach" class="toggle-btn" onclick="setMode('mach')">Mach</button>
+            </div>
         </div>
-    </div>
-
-    <div id="timeline-container" class="timeline"></div>
-    <div id="focus-area">
+        <div id="timeline-container" class="timeline"></div>
         <div class="card">
             <div class="ex-image-container"><img id="ex-img" src="" alt=""></div>
-            <div class="ten-rm-badge">10RM: <span id="val-10rm">0</span>kg</div>
-            <h2 id="ex-name" style="text-align:center; color:var(--blue); margin-top:0;"></h2>
+            <h2 id="ex-name" style="text-align:center; color:var(--blue); margin-top:10px;"></h2>
             <div id="set-counter" style="text-align:center; font-size:0.7rem; color:#888; margin-bottom:15px;"></div>
-
-            <div class="stepper-container">
-                <div class="stepper-label">Weight</div>
-                <div class="stepper-controls">
-                    <button class="step-btn" onclick="adjust('w', -2.5)">−</button>
-                    <div class="step-value" id="val-w">0</div>
-                    <button class="step-btn" onclick="adjust('w', 2.5)">+</button>
-                </div>
+            <div class="stepper-controls">
+                <button class="step-btn" onclick="adjust('w', -2.5)">−</button>
+                <div class="step-value" id="val-w">0</div>
+                <button class="step-btn" onclick="adjust('w', 2.5)">+</button>
             </div>
-
-            <div class="stepper-container">
-                <div class="stepper-label">Reps</div>
-                <div class="stepper-controls">
-                    <button class="step-btn" onclick="adjust('r', -1)">−</button>
-                    <div class="step-value" id="val-r">0</div>
-                    <button class="step-btn" onclick="adjust('r', 1)">+</button>
-                </div>
-            </div>
-
-            <div class="stepper-container">
-                <div class="stepper-label">RPE</div>
-                <div class="stepper-controls">
-                    <button class="step-btn" onclick="adjust('e', -1)">−</button>
-                    <div class="step-value" id="val-e">8</div>
-                    <button class="step-btn" onclick="adjust('e', 1)">+</button>
-                </div>
+            <div class="stepper-controls" style="margin-top:10px">
+                <button class="step-btn" onclick="adjust('r', -1)">−</button>
+                <div class="step-value" id="val-r">0</div>
+                <button class="step-btn" onclick="adjust('r', 1)">+</button>
             </div>
             <button class="btn-complete" onclick="completeSet()">LOG & REST</button>
         </div>
     </div>
 
+    <div id="progress-page" class="page">
+        <h2 style="color: var(--blue);">Personal Records</h2>
+        <div id="records-list"></div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="showPage('workout')">WORKOUT</div>
+        <div class="nav-item" onclick="showPage('progress')">PROGRESS</div>
+    </div>
+
     <div id="timer-overlay">
         <div id="timer-display">90</div>
-        <button class="btn-skip" onclick="stopRest()">SKIP REST</button>
+        <button style="background:none; border:1px solid #333; color:#666; padding:10px 20px; border-radius:20px; margin-top:20px;" onclick="stopRest()">SKIP</button>
     </div>
 
     <script>
+        // Data and Logic
         const workoutData = {
             pushA: [
                 { id: "pA1", free: "Barbell Bench Press", mach: "Machine Chest Press", sets: 3, rMin: 8, rMax: 10, wF: 35, wM: 45 },
@@ -130,38 +127,60 @@
             ]
         };
 
-        let currentExIdx = 0, currentSetIdx = 1, currentMode = 'free', curW, curR, curE, restTimer;
+        let currentExIdx = 0, currentSetIdx = 1, currentMode = 'free', curW, curR, restTimer;
 
-        function setMode(m) { currentMode = m; document.getElementById('mode-free').className = m === 'free' ? 'toggle-btn active' : 'toggle-btn'; document.getElementById('mode-mach').className = m === 'mach' ? 'toggle-btn active' : 'toggle-btn'; initWorkout(); }
-        
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(page + '-page').classList.add('active');
+            event.target.classList.add('active');
+            if(page === 'progress') renderProgress();
+        }
+
+        function renderProgress() {
+            const list = document.getElementById('records-list');
+            list.innerHTML = "";
+            Object.values(workoutData).flat().forEach(ex => {
+                const hist = JSON.parse(localStorage.getItem(`hist_${ex.id}_s1`));
+                if(hist) {
+                    list.innerHTML += `
+                        <div class="stat-card">
+                            <div class="stat-header"><span class="stat-title">${ex.free}</span></div>
+                            <div class="stat-grid">
+                                <div class="stat-box">WEIGHT<span>${hist.w}kg</span></div>
+                                <div class="stat-box">REPS<span>${hist.r}</span></div>
+                                <div class="stat-box">EST. 10RM<span>${(hist.w / (1.0278 - (0.0278 * hist.r)) * 0.75).toFixed(1)}kg</span></div>
+                            </div>
+                        </div>`;
+                }
+            });
+        }
+
+        // Reuse existing workout logic (setMode, initWorkout, updateUI, adjust, completeSet, etc.)
+        function setMode(m) { currentMode = m; document.getElementById('mode-free').classList.toggle('active', m === 'free'); document.getElementById('mode-mach').classList.toggle('active', m === 'mach'); initWorkout(); }
         function initWorkout() { const k = document.getElementById('workoutSelect').value; workoutList = workoutData[k] || []; currentExIdx = 0; currentSetIdx = 1; updateUI(); }
-
         function updateUI() {
             const ex = workoutList[currentExIdx];
-            if (!ex) { document.getElementById('focus-area').innerHTML = "<h1 style='text-align:center;'>Done! 🏆</h1>"; return; }
+            if (!ex) return;
             const name = currentMode === 'free' ? ex.free : ex.mach;
             document.getElementById('ex-name').innerText = name;
             document.getElementById('set-counter').innerText = `Set ${currentSetIdx} of ${ex.sets}`;
             document.getElementById('ex-img').src = `https://loremflickr.com/500/300/gym,${name.split(' ').pop()}`;
-            document.getElementById('timeline-container').innerHTML = workoutList.map((item, idx) => `<div class="step ${idx < currentExIdx ? 'done' : (idx === currentExIdx ? 'active' : '')}">${(currentMode === 'free' ? item.free : item.mach).split(' ')[0]}<span class="step-sets">${item.sets} Sets</span></div>`).join('');
+            document.getElementById('timeline-container').innerHTML = workoutList.map((item, idx) => `<div class="step ${idx < currentExIdx ? 'done' : (idx === currentExIdx ? 'active' : '')}">${(currentMode === 'free' ? item.free : item.mach).split(' ')[0]}</div>`).join('');
             curW = parseFloat(localStorage.getItem(`w_${ex.id}_${currentMode}`)) || (currentMode === 'free' ? ex.wF : ex.wM);
-            curR = ex.rMin; curE = 8; updateDisplays();
+            curR = ex.rMin; updateDisplays();
         }
-
-        function adjust(t, a) { if(t==='w')curW=Math.max(0,curW+a); if(t==='r')curR=Math.max(1,curR+a); if(t==='e')curE=Math.max(1,Math.min(10,curE+a)); updateDisplays(); }
-        function updateDisplays() { document.getElementById('val-w').innerText = curW; document.getElementById('val-r').innerText = curR; document.getElementById('val-e').innerText = curE; document.getElementById('val-10rm').innerText = (curW / (1.0278 - (0.0278 * curR)) * 0.75).toFixed(1); }
-
+        function adjust(t, a) { if(t==='w')curW=Math.max(0,curW+a); if(t==='r')curR=Math.max(1,curR+a); updateDisplays(); }
+        function updateDisplays() { document.getElementById('val-w').innerText = curW; document.getElementById('val-r').innerText = curR; }
         function completeSet() { 
             const ex = workoutList[currentExIdx];
-            if (curE <= 7 && curR >= ex.rMax) localStorage.setItem(`w_${ex.id}_${currentMode}`, curW + 2.5);
+            localStorage.setItem(`hist_${ex.id}_s${currentSetIdx}`, JSON.stringify({w: curW, r: curR}));
             if (currentSetIdx < ex.sets) currentSetIdx++; else { currentExIdx++; currentSetIdx = 1; }
             startRest(); updateUI();
         }
-
-        function startRest() { const o = document.getElementById('timer-overlay'); let s = 90; o.style.display = 'flex'; document.getElementById('timer-display').innerText = s; restTimer = setInterval(() => { s--; document.getElementById('timer-display').innerText = s; if(s <= 0) stopRest(); }, 1000); }
-        function stopRest() { clearInterval(restTimer); document.getElementById('timer-overlay').style.display = 'none'; }
-
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+        function startRest() { document.getElementById('timer-overlay').style.display='flex'; let s=90; restTimer=setInterval(()=>{s--; document.getElementById('timer-display').innerText=s; if(s<=0)stopRest();},1000); }
+        function stopRest() { clearInterval(restTimer); document.getElementById('timer-overlay').style.display='none'; }
+        
         initWorkout();
     </script>
 </body>
