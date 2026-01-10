@@ -1,6 +1,6 @@
 {
-  "name": "Elite Gym Partner",
-  "short_name": "GymTracker",
+  "name": "Jelmer Says Gym Partner",
+  "short_name": "JelmerSays",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#000000",

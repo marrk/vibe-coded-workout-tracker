@@ -2,185 +2,133 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#000000">
-    <title>Elite Gym Partner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus Gym Tracker</title>
     <style>
-        :root { --blue: #3498db; --green: #27ae60; --bg: #000; --card: #111; --text-dim: #666; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: white; padding: 15px; max-width: 500px; margin: auto; touch-action: manipulation; padding-bottom: 80px; }
-        
-        /* Navigation */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #111; display: flex; border-top: 1px solid #333; z-index: 1000; }
-        .nav-item { flex: 1; padding: 15px; text-align: center; color: #666; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
-        .nav-item.active { color: var(--blue); }
-
-        .page { display: none; }
-        .page.active { display: block; }
-
-        /* Progress Page Styles */
-        .stat-card { background: var(--card); border-radius: 15px; padding: 15px; margin-bottom: 12px; border: 1px solid #222; }
-        .stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .stat-title { color: var(--blue); font-weight: bold; }
-        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .stat-box { text-align: center; font-size: 0.7rem; color: #888; }
-        .stat-box span { display: block; color: white; font-size: 1rem; font-weight: bold; margin-top: 4px; }
-
-        /* Reuse previous styles for Workout Page */
-        .header-controls { display: flex; gap: 8px; margin-bottom: 15px; }
-        select { background: #111; color: white; border: 1px solid #333; padding: 12px; border-radius: 10px; flex: 2; font-size: 0.9rem; }
-        .toggle-group { display: flex; background: #222; border-radius: 10px; padding: 3px; flex: 2; border: 1px solid #333; }
-        .toggle-btn { flex: 1; border: none; background: none; color: #666; padding: 10px 5px; font-size: 0.7rem; font-weight: bold; border-radius: 8px; }
-        .toggle-btn.active { background: var(--blue); color: white; }
-        .timeline { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 15px; margin-bottom: 15px; scrollbar-width: none; border-bottom: 1px solid #222; }
-        .step { min-width: 100px; text-align: center; font-size: 0.65em; color: #444; border: 1px solid #222; padding: 10px; border-radius: 12px; flex-shrink: 0; }
-        .step.active { color: var(--blue); border-color: var(--blue); background: rgba(52, 152, 219, 0.1); }
-        .step.done { color: var(--green); border-color: var(--green); opacity: 0.5; }
-        .card { background: var(--card); border-radius: 24px; padding: 20px; border: 1px solid #333; position: relative; overflow: hidden; }
-        .ex-image-container { width: calc(100% + 40px); margin: -20px -20px 20px -20px; height: 160px; background: #222; }
-        .ex-image-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
-        .stepper-controls { display: flex; align-items: center; justify-content: space-between; background: #000; border-radius: 15px; padding: 4px; border: 1px solid #222; margin-top:5px;}
-        .step-btn { width: 50px; height: 50px; border-radius: 12px; border: none; background: #222; color: white; font-size: 1.4rem; }
-        .step-value { font-size: 1.6rem; font-weight: bold; width: 90px; text-align: center; }
-        .btn-complete { background: var(--green); color: white; border: none; padding: 20px; width: 100%; border-radius: 16px; font-weight: bold; font-size: 1.2rem; margin-top: 15px; }
-        #timer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 100; }
-        #timer-display { font-size: 10rem; font-weight: bold; color: var(--green); }
+        body { font-family: -apple-system, sans-serif; background: #000; color: white; padding: 15px; max-width: 500px; margin: auto; padding-bottom: 100px; }
+        .timeline { display: flex; overflow-x: auto; gap: 8px; padding: 15px 0; margin-bottom: 30px; border-bottom: 1px solid #222; scrollbar-width: none; }
+        .timeline::-webkit-scrollbar { display: none; }
+        .step { min-width: 100px; text-align: center; font-size: 0.65em; color: #444; border: 1px solid #222; padding: 10px; border-radius: 8px; flex-shrink: 0; }
+        .step.active { color: #3498db; border-color: #3498db; background: rgba(52, 152, 219, 0.1); }
+        .step.done { color: #27ae60; border-color: #27ae60; background: rgba(39, 174, 96, 0.1); }
+        .step div { font-weight: bold; margin-top: 4px; font-size: 1.1em; }
+        .focus-label { text-align: center; color: #888; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8em; margin-bottom: 10px; }
+        .exercise-title { text-align: center; font-size: 1.8em; margin-bottom: 30px; color: #3498db; }
+        .card { background: #111; border-radius: 20px; padding: 25px; border: 1px solid #333; }
+        .input-row { display: flex; gap: 15px; margin: 20px 0; }
+        .input-group { flex: 1; display: flex; flex-direction: column; font-size: 0.75em; color: #666; text-align: center; }
+        .input-group input { background: #000; color: #fff; border: 1px solid #444; margin-top: 8px; text-align: center; font-size: 1.5em; padding: 15px 5px; border-radius: 12px; }
+        .btn-done { background: #27ae60; color: white; border: none; padding: 20px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 1.2em; cursor: pointer; }
+        #timer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 100; }
+        #timer-display { font-size: 8rem; font-weight: bold; color: #27ae60; }
+        select { background: #111; color: white; border: 1px solid #333; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="workout-page" class="page active">
-        <div class="header-controls">
-            <select id="workoutSelect" onchange="initWorkout()">
-                <option value="pushA">Push A</option><option value="pullA">Pull A</option>
-                <option value="pushB">Push B</option><option value="pullB">Pull B</option>
-            </select>
-            <div class="toggle-group">
-                <button id="mode-free" class="toggle-btn active" onclick="setMode('free')">Free</button>
-                <button id="mode-mach" class="toggle-btn" onclick="setMode('mach')">Mach</button>
-            </div>
-        </div>
-        <div id="timeline-container" class="timeline"></div>
+    <div id="setup-ui">
+        <select id="workoutSelect" onchange="initWorkout()">
+            <option value="pushA">Push A (Chest Focus)</option>
+            <option value="pullA">Pull A (Width)</option>
+        </select>
+        <select id="equipSelect" onchange="initWorkout()">
+            <option value="free">Free Weights</option>
+            <option value="mach">Machines</option>
+        </select>
+    </div>
+
+    <div id="timeline-container" class="timeline"></div>
+    <div id="focus-area">
+        <div class="focus-label" id="set-counter">SET 1</div>
+        <div class="exercise-title" id="ex-name">Select Workout</div>
         <div class="card">
-            <div class="ex-image-container"><img id="ex-img" src="" alt=""></div>
-            <h2 id="ex-name" style="text-align:center; color:var(--blue); margin-top:10px;"></h2>
-            <div id="set-counter" style="text-align:center; font-size:0.7rem; color:#888; margin-bottom:15px;"></div>
-            <div class="stepper-controls">
-                <button class="step-btn" onclick="adjust('w', -2.5)">−</button>
-                <div class="step-value" id="val-w">0</div>
-                <button class="step-btn" onclick="adjust('w', 2.5)">+</button>
+            <div class="input-row">
+                <div class="input-group">KG<input type="number" step="0.5" id="cur-w"></div>
+                <div class="input-group">REPS<input type="number" id="cur-r"></div>
+                <div class="input-group">RPE<input type="number" id="cur-e" value="8"></div>
             </div>
-            <div class="stepper-controls" style="margin-top:10px">
-                <button class="step-btn" onclick="adjust('r', -1)">−</button>
-                <div class="step-value" id="val-r">0</div>
-                <button class="step-btn" onclick="adjust('r', 1)">+</button>
-            </div>
-            <button class="btn-complete" onclick="completeSet()">LOG & REST</button>
+            <button class="btn-done" onclick="completeCurrentSet()">COMPLETE SET</button>
         </div>
-    </div>
-
-    <div id="progress-page" class="page">
-        <h2 style="color: var(--blue);">Personal Records</h2>
-        <div id="records-list"></div>
-    </div>
-
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="showPage('workout')">WORKOUT</div>
-        <div class="nav-item" onclick="showPage('progress')">PROGRESS</div>
     </div>
 
     <div id="timer-overlay">
         <div id="timer-display">90</div>
-        <button style="background:none; border:1px solid #333; color:#666; padding:10px 20px; border-radius:20px; margin-top:20px;" onclick="stopRest()">SKIP</button>
+        <button onclick="stopRest()" style="background:transparent; border:1px solid #444; color:#888; padding:10px 25px; margin-top:40px; border-radius:30px;">SKIP</button>
     </div>
 
     <script>
-        // Data and Logic
-        const workoutData = {
-            pushA: [
-                { id: "pA1", free: "Barbell Bench Press", mach: "Machine Chest Press", sets: 3, rMin: 8, rMax: 10, wF: 35, wM: 45 },
-                { id: "pA2", free: "Incline DB Press", mach: "Smith Machine Incline", sets: 3, rMin: 10, rMax: 12, wF: 15, wM: 35 },
-                { id: "pA3", free: "DB Shoulder Press", mach: "Machine Shoulder Press", sets: 3, rMin: 10, rMax: 12, wF: 12.5, wM: 30 },
-                { id: "pA4", free: "DB Flat Flys", mach: "Pec Deck Fly", sets: 3, rMin: 12, rMax: 15, wF: 10, wM: 30 },
-                { id: "pA5", free: "DB Lateral Raise", mach: "Cable Side Raise", sets: 3, rMin: 15, rMax: 20, wF: 8, wM: 5 }
-            ],
-            pullA: [
-                { id: "plA1", free: "DB Lat Pullover", mach: "Lat Pulldown", sets: 3, rMin: 8, rMax: 12, wF: 17.5, wM: 40 },
-                { id: "plA2", free: "Bent Barbell Row", mach: "Seated Cable Row", sets: 3, rMin: 10, rMax: 12, wF: 35, wM: 40 },
-                { id: "plA3", free: "Face Pulls", mach: "Reverse Pec Deck", sets: 3, rMin: 15, rMax: 20, wF: 15, wM: 25 },
-                { id: "plA4", free: "DB Shrugs", mach: "Machine Shrugs", sets: 3, rMin: 12, rMax: 15, wF: 20, wM: 40 },
-                { id: "plA5", free: "Barbell Curls", mach: "Preacher Machine", sets: 3, rMin: 10, rMax: 12, wF: 15, wM: 20 }
-            ],
-            pushB: [
-                { id: "pB1", free: "Standing BB Press", mach: "Shoulder Press Machine", sets: 3, rMin: 8, rMax: 10, wF: 30, wM: 35 },
-                { id: "pB2", free: "Low-to-High Cables", mach: "Incline Machine Press", sets: 3, rMin: 12, rMax: 15, wF: 7.5, wM: 30 },
-                { id: "pB3", free: "Lean Lateral Raise", mach: "Machine Lateral Raise", sets: 4, rMin: 12, rMax: 15, wF: 8, wM: 20 },
-                { id: "pB4", free: "Skull Crushers", mach: "Cable Tricep Pushdown", sets: 3, rMin: 10, rMax: 12, wF: 15, wM: 15 },
-                { id: "pB5", free: "Weighted Push-Ups", mach: "Chest Press (Light)", sets: 2, rMin: 15, rMax: 20, wF: 0, wM: 30 }
-            ],
-            pullB: [
-                { id: "plB1", free: "One-arm DB Row", mach: "T-Bar Row Machine", sets: 3, rMin: 8, rMax: 10, wF: 20, wM: 35 },
-                { id: "plB2", free: "Straight Arm Pullover", mach: "Close Grip Pulldown", sets: 3, rMin: 12, rMax: 15, wF: 12.5, wM: 35 },
-                { id: "plB3", free: "Barbell Deadlift", mach: "Back Extension Machine", sets: 3, rMin: 8, rMax: 10, wF: 40, wM: 40 },
-                { id: "plB4", free: "DB Rear Delt Flys", mach: "Cable Face Pulls", sets: 3, rMin: 15, rMax: 20, wF: 8, wM: 15 },
-                { id: "plB5", free: "DB Hammer Curls", mach: "Cable Hammer Curls", sets: 3, rMin: 12, rMax: 15, wF: 10, wM: 10 }
-            ]
-        };
+        let currentExIdx = 0;
+        let currentSetIdx = 1; 
+        let workoutList = [];
+        let allWorkouts = {};
 
-        let currentExIdx = 0, currentSetIdx = 1, currentMode = 'free', curW, curR, restTimer;
-
-        function showPage(page) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(page + '-page').classList.add('active');
-            event.target.classList.add('active');
-            if(page === 'progress') renderProgress();
+        async function initWorkout() {
+            try {
+                // Fetch the external JSON file
+                const response = await fetch('workouts.json');
+                allWorkouts = await response.json();
+                
+                const key = document.getElementById('workoutSelect').value;
+                workoutList = allWorkouts[key] || [];
+                currentExIdx = 0;
+                currentSetIdx = 1;
+                updateUI();
+            } catch (error) {
+                console.error("Error loading workouts:", error);
+                alert("Could not find workouts.json. Make sure it is in the same folder.");
+            }
         }
 
-        function renderProgress() {
-            const list = document.getElementById('records-list');
-            list.innerHTML = "";
-            Object.values(workoutData).flat().forEach(ex => {
-                const hist = JSON.parse(localStorage.getItem(`hist_${ex.id}_s1`));
-                if(hist) {
-                    list.innerHTML += `
-                        <div class="stat-card">
-                            <div class="stat-header"><span class="stat-title">${ex.free}</span></div>
-                            <div class="stat-grid">
-                                <div class="stat-box">WEIGHT<span>${hist.w}kg</span></div>
-                                <div class="stat-box">REPS<span>${hist.r}</span></div>
-                                <div class="stat-box">EST. 10RM<span>${(hist.w / (1.0278 - (0.0278 * hist.r)) * 0.75).toFixed(1)}kg</span></div>
-                            </div>
-                        </div>`;
-                }
-            });
-        }
-
-        // Reuse existing workout logic (setMode, initWorkout, updateUI, adjust, completeSet, etc.)
-        function setMode(m) { currentMode = m; document.getElementById('mode-free').classList.toggle('active', m === 'free'); document.getElementById('mode-mach').classList.toggle('active', m === 'mach'); initWorkout(); }
-        function initWorkout() { const k = document.getElementById('workoutSelect').value; workoutList = workoutData[k] || []; currentExIdx = 0; currentSetIdx = 1; updateUI(); }
         function updateUI() {
             const ex = workoutList[currentExIdx];
-            if (!ex) return;
-            const name = currentMode === 'free' ? ex.free : ex.mach;
-            document.getElementById('ex-name').innerText = name;
-            document.getElementById('set-counter').innerText = `Set ${currentSetIdx} of ${ex.sets}`;
-            document.getElementById('ex-img').src = `https://loremflickr.com/500/300/gym,${name.split(' ').pop()}`;
-            document.getElementById('timeline-container').innerHTML = workoutList.map((item, idx) => `<div class="step ${idx < currentExIdx ? 'done' : (idx === currentExIdx ? 'active' : '')}">${(currentMode === 'free' ? item.free : item.mach).split(' ')[0]}</div>`).join('');
-            curW = parseFloat(localStorage.getItem(`w_${ex.id}_${currentMode}`)) || (currentMode === 'free' ? ex.wF : ex.wM);
-            curR = ex.rMin; updateDisplays();
+            if (!ex) {
+                document.getElementById('focus-area').innerHTML = "<h1>Done!</h1>";
+                return;
+            }
+
+            // Get current set data (set 1, 2, 3, or 4)
+            const setData = ex.sets_data[currentSetIdx - 1];
+            
+            // Calculate weight: (Stored 10RM or Default 10RM) * weight_percentage
+            const base10RM = parseFloat(localStorage.getItem(`rm_${ex.id}`)) || ex.tenRM_base;
+            const calculatedWeight = (base10RM * setData.weight_pct).toFixed(1);
+
+            document.getElementById('ex-name').innerText = ex.name;
+            document.getElementById('set-counter').innerText = `SET ${currentSetIdx} OF 4`;
+            document.getElementById('cur-w').value = calculatedWeight;
+            document.getElementById('cur-r').value = setData.reps;
         }
-        function adjust(t, a) { if(t==='w')curW=Math.max(0,curW+a); if(t==='r')curR=Math.max(1,curR+a); updateDisplays(); }
-        function updateDisplays() { document.getElementById('val-w').innerText = curW; document.getElementById('val-r').innerText = curR; }
-        function completeSet() { 
+
+        function completeCurrentSet() {
             const ex = workoutList[currentExIdx];
-            localStorage.setItem(`hist_${ex.id}_s${currentSetIdx}`, JSON.stringify({w: curW, r: curR}));
-            if (currentSetIdx < ex.sets) currentSetIdx++; else { currentExIdx++; currentSetIdx = 1; }
-            startRest(); updateUI();
+            const w = parseFloat(document.getElementById('cur-w').value);
+            const r = parseInt(document.getElementById('cur-r').value);
+            const e = parseInt(document.getElementById('cur-e').value);
+            const mode = document.getElementById('equipSelect').value;
+
+            if (e <= 7 && r >= ex.rMax) {
+                localStorage.setItem(`w_${ex.id}_${mode}`, w + 2.5);
+            }
+
+            if (currentSetIdx < ex.sets) { currentSetIdx++; } 
+            else { currentExIdx++; currentSetIdx = 1; }
+
+            startRest();
+            updateUI();
         }
-        function startRest() { document.getElementById('timer-overlay').style.display='flex'; let s=90; restTimer=setInterval(()=>{s--; document.getElementById('timer-display').innerText=s; if(s<=0)stopRest();},1000); }
-        function stopRest() { clearInterval(restTimer); document.getElementById('timer-overlay').style.display='none'; }
-        
+
+        let countdown;
+        function startRest() {
+            document.getElementById('timer-overlay').style.display = 'flex';
+            let s = 90;
+            document.getElementById('timer-display').innerText = s;
+            countdown = setInterval(() => { 
+                s--; document.getElementById('timer-display').innerText = s;
+                if (s <= 0) stopRest();
+            }, 1000);
+        }
+        function stopRest() { clearInterval(countdown); document.getElementById('timer-overlay').style.display = 'none'; }
+
         initWorkout();
     </script>
 </body>
