@@ -3,133 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Focus Gym Tracker</title>
+    <title>Jelmer Says Gym Tracker</title>
     <style>
-        body { font-family: -apple-system, sans-serif; background: #000; color: white; padding: 15px; max-width: 500px; margin: auto; padding-bottom: 100px; }
-        .timeline { display: flex; overflow-x: auto; gap: 8px; padding: 15px 0; margin-bottom: 30px; border-bottom: 1px solid #222; scrollbar-width: none; }
-        .timeline::-webkit-scrollbar { display: none; }
-        .step { min-width: 100px; text-align: center; font-size: 0.65em; color: #444; border: 1px solid #222; padding: 10px; border-radius: 8px; flex-shrink: 0; }
-        .step.active { color: #3498db; border-color: #3498db; background: rgba(52, 152, 219, 0.1); }
-        .step.done { color: #27ae60; border-color: #27ae60; background: rgba(39, 174, 96, 0.1); }
-        .step div { font-weight: bold; margin-top: 4px; font-size: 1.1em; }
-        .focus-label { text-align: center; color: #888; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8em; margin-bottom: 10px; }
-        .exercise-title { text-align: center; font-size: 1.8em; margin-bottom: 30px; color: #3498db; }
-        .card { background: #111; border-radius: 20px; padding: 25px; border: 1px solid #333; }
-        .input-row { display: flex; gap: 15px; margin: 20px 0; }
-        .input-group { flex: 1; display: flex; flex-direction: column; font-size: 0.75em; color: #666; text-align: center; }
-        .input-group input { background: #000; color: #fff; border: 1px solid #444; margin-top: 8px; text-align: center; font-size: 1.5em; padding: 15px 5px; border-radius: 12px; }
-        .btn-done { background: #27ae60; color: white; border: none; padding: 20px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 1.2em; cursor: pointer; }
-        #timer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 100; }
-        #timer-display { font-size: 8rem; font-weight: bold; color: #27ae60; }
-        select { background: #111; color: white; border: 1px solid #333; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; }
+        body { font-family: -apple-system, sans-serif; background: #000; color: white; padding: 15px; max-width: 500px; margin: auto; }
+        #start-screen { display: flex; flex-direction: column; justify-content: center; height: 85vh; text-align: center; }
+        #workout-ui { display: none; }
+        
+        /* Selection UI */
+        select { background: #111; color: white; border: 1px solid #333; padding: 20px; border-radius: 15px; width: 100%; font-size: 1.2em; margin-bottom: 20px; text-align: center; }
+        .btn-start { background: #3498db; color: white; border: none; padding: 25px; border-radius: 15px; font-size: 1.4em; font-weight: bold; }
+
+        /* Timeline with Reps & Sets Left */
+        .timeline { display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; border-bottom: 1px solid #222; margin-bottom: 25px; scrollbar-width: none; }
+        .step { min-width: 120px; text-align: center; font-size: 0.75em; color: #444; border: 1px solid #222; padding: 12px; border-radius: 15px; flex-shrink: 0; transition: 0.3s; }
+        .step.active { color: #3498db; border-color: #3498db; background: rgba(52, 152, 219, 0.1); transform: scale(1.05); }
+        .step.done { color: #27ae60; border-color: #27ae60; opacity: 0.4; }
+        .info-sub { font-weight: bold; color: #888; font-size: 1.1em; margin: 4px 0; }
+        .active .info-sub { color: #fff; }
+
+        /* Controls */
+        .control-row { background: #111; border-radius: 20px; padding: 18px; margin-bottom: 15px; border: 1px solid #222; }
+        .stepper { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+        .btn-step { background: #222; color: white; border: 1px solid #444; width: 60px; height: 60px; border-radius: 15px; font-size: 1.8em; }
+        .val { font-size: 2.2em; font-weight: bold; }
+        .btn-complete { background: #27ae60; color: white; border: none; width: 100%; padding: 22px; border-radius: 20px; font-size: 1.4em; font-weight: bold; margin-top: 15px; }
+
+        /* Rest Overlay */
+        #rest { position: fixed; top:0; left:0; width:100%; height:100%; background:#000; display:none; flex-direction:column; justify-content:center; align-items:center; z-index:100; }
+        #timer { font-size: 9rem; font-weight: bold; color: #27ae60; font-family: monospace; }
     </style>
 </head>
 <body>
 
-    <div id="setup-ui">
-        <select id="workoutSelect" onchange="initWorkout()">
-            <option value="pushA">Push A (Chest Focus)</option>
-            <option value="pullA">Pull A (Width)</option>
+    <div id="start-screen">
+        <h1 style="color:#3498db">GEMINI FIT</h1>
+        <select id="w-select">
+            <option value="workoutA">Workout A (Push & Arms)</option>
+            <option value="workoutB">Workout B (Legs & Back)</option>
         </select>
-        <select id="equipSelect" onchange="initWorkout()">
-            <option value="free">Free Weights</option>
-            <option value="mach">Machines</option>
-        </select>
+        <button class="btn-start" onclick="begin()">START SESSION</button>
     </div>
 
-    <div id="timeline-container" class="timeline"></div>
-    <div id="focus-area">
-        <div class="focus-label" id="set-counter">SET 1</div>
-        <div class="exercise-title" id="ex-name">Select Workout</div>
-        <div class="card">
-            <div class="input-row">
-                <div class="input-group">KG<input type="number" step="0.5" id="cur-w"></div>
-                <div class="input-group">REPS<input type="number" id="cur-r"></div>
-                <div class="input-group">RPE<input type="number" id="cur-e" value="8"></div>
-            </div>
-            <button class="btn-done" onclick="completeCurrentSet()">COMPLETE SET</button>
+    <div id="workout-ui">
+        <div id="tl" class="timeline"></div>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div id="ex-title" style="font-size: 1.8em; font-weight: bold;">--</div>
+            <div id="set-count" style="color:#666; text-transform:uppercase; letter-spacing:1px;">SET 1 OF 4</div>
         </div>
+
+        <div class="control-row">
+            <span style="color:#666; font-size:0.8em">WEIGHT (KG)</span>
+            <div class="stepper">
+                <button class="btn-step" onclick="adj('w',-2.5)">-</button>
+                <div class="val" id="v-w">0</div>
+                <button class="btn-step" onclick="adj('w',2.5)">+</button>
+            </div>
+        </div>
+
+        <div class="control-row">
+            <span style="color:#666; font-size:0.8em">REPS</span>
+            <div class="stepper">
+                <button class="btn-step" onclick="adj('r',-1)">-</button>
+                <div class="val" id="v-r">0</div>
+                <button class="btn-step" onclick="adj('r',1)">+</button>
+            </div>
+        </div>
+
+        <div class="control-row">
+            <span style="color:#666; font-size:0.8em">RPE</span>
+            <div class="stepper">
+                <button class="btn-step" onclick="adj('e',-1)">-</button>
+                <div class="val" id="v-e">8</div>
+                <button class="btn-step" onclick="adj('e',1)">+</button>
+            </div>
+        </div>
+
+        <button class="btn-complete" onclick="nextSet()">FINISH SET</button>
     </div>
 
-    <div id="timer-overlay">
-        <div id="timer-display">90</div>
-        <button onclick="stopRest()" style="background:transparent; border:1px solid #444; color:#888; padding:10px 25px; margin-top:40px; border-radius:30px;">SKIP</button>
+    <div id="rest">
+        <div id="timer">90</div>
+        <button onclick="skipRest()" style="background:none; border:1px solid #444; color:#666; padding:15px 40px; border-radius:30px; margin-top:30px;">SKIP REST</button>
     </div>
 
     <script>
-        let currentExIdx = 0;
-        let currentSetIdx = 1; 
-        let workoutList = [];
-        let allWorkouts = {};
+        let exIdx = 0, setIdx = 0, activeW = [], data = null;
 
-        async function initWorkout() {
-            try {
-                // Fetch the external JSON file
-                const response = await fetch('workouts.json');
-                allWorkouts = await response.json();
+        async function begin() {
+            const res = await fetch('workouts.json');
+            data = await res.json();
+            activeW = data[document.getElementById('w-select').value];
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('workout-ui').style.display = 'block';
+            draw();
+        }
+
+        function draw() {
+            const ex = activeW[exIdx];
+            const sch = data.schemes[ex.scheme];
+            const step = sch[setIdx];
+            const rm = parseFloat(localStorage.getItem(`rm_${ex.id}`)) || ex.rm;
+
+            document.getElementById('ex-title').innerText = ex.name;
+            document.getElementById('set-count').innerText = `Set ${setIdx+1} of ${sch.length}`;
+            document.getElementById('v-w').innerText = (rm * step.pct).toFixed(1);
+            document.getElementById('v-r').innerText = step.reps;
+
+            const tl = document.getElementById('tl');
+            tl.innerHTML = activeW.map((item, i) => {
+                const sLen = data.schemes[item.scheme].length;
+                let status = i < exIdx ? 'done' : (i === exIdx ? 'active' : '');
+                let detail = i < exIdx ? '✓' : (i === exIdx ? `${sLen - setIdx} LEFT` : `${sLen} SETS`);
+                let reps = `${data.schemes[item.scheme][0].reps} REPS`;
                 
-                const key = document.getElementById('workoutSelect').value;
-                workoutList = allWorkouts[key] || [];
-                currentExIdx = 0;
-                currentSetIdx = 1;
-                updateUI();
-            } catch (error) {
-                console.error("Error loading workouts:", error);
-                alert("Could not find workouts.json. Make sure it is in the same folder.");
-            }
-        }
-
-        function updateUI() {
-            const ex = workoutList[currentExIdx];
-            if (!ex) {
-                document.getElementById('focus-area').innerHTML = "<h1>Done!</h1>";
-                return;
-            }
-
-            // Get current set data (set 1, 2, 3, or 4)
-            const setData = ex.sets_data[currentSetIdx - 1];
+                return `<div class="step ${status}">
+                    <div style="font-weight:bold">${item.name}</div>
+                    <div class="info-sub">${reps}</div>
+                    <div style="color:#555">${detail}</div>
+                </div>`;
+            }).join('');
             
-            // Calculate weight: (Stored 10RM or Default 10RM) * weight_percentage
-            const base10RM = parseFloat(localStorage.getItem(`rm_${ex.id}`)) || ex.tenRM_base;
-            const calculatedWeight = (base10RM * setData.weight_pct).toFixed(1);
-
-            document.getElementById('ex-name').innerText = ex.name;
-            document.getElementById('set-counter').innerText = `SET ${currentSetIdx} OF 4`;
-            document.getElementById('cur-w').value = calculatedWeight;
-            document.getElementById('cur-r').value = setData.reps;
+            const active = document.querySelector('.step.active');
+            if(active) active.scrollIntoView({behavior:'smooth', inline:'center'});
         }
 
-        function completeCurrentSet() {
-            const ex = workoutList[currentExIdx];
-            const w = parseFloat(document.getElementById('cur-w').value);
-            const r = parseInt(document.getElementById('cur-r').value);
-            const e = parseInt(document.getElementById('cur-e').value);
-            const mode = document.getElementById('equipSelect').value;
+        function adj(t, a) {
+            const el = document.getElementById(`v-${t}`);
+            let v = parseFloat(el.innerText);
+            v = Math.max(0, v + a);
+            el.innerText = t === 'w' ? v.toFixed(1) : Math.round(v);
+        }
 
-            if (e <= 7 && r >= ex.rMax) {
-                localStorage.setItem(`w_${ex.id}_${mode}`, w + 2.5);
+        function nextSet() {
+            const ex = activeW[exIdx];
+            const sch = data.schemes[ex.scheme];
+            const rpe = parseInt(document.getElementById('v-e').innerText);
+
+            if (setIdx === sch.length - 1 && rpe <= 7) {
+                const currRM = parseFloat(localStorage.getItem(`rm_${ex.id}`)) || ex.rm;
+                localStorage.setItem(`rm_${ex.id}`, currRM + 2.5);
             }
 
-            if (currentSetIdx < ex.sets) { currentSetIdx++; } 
-            else { currentExIdx++; currentSetIdx = 1; }
+            if (setIdx < sch.length - 1) { setIdx++; } 
+            else { exIdx++; setIdx = 0; }
 
-            startRest();
-            updateUI();
+            if (exIdx < activeW.length) { startT(); draw(); } 
+            else { document.body.innerHTML = "<h1 style='text-align:center; margin-top:100px;'>Session Complete! 🔥</h1>"; }
         }
 
-        let countdown;
-        function startRest() {
-            document.getElementById('timer-overlay').style.display = 'flex';
+        let clock;
+        function startT() {
+            document.getElementById('rest').style.display = 'flex';
             let s = 90;
-            document.getElementById('timer-display').innerText = s;
-            countdown = setInterval(() => { 
-                s--; document.getElementById('timer-display').innerText = s;
-                if (s <= 0) stopRest();
+            document.getElementById('timer').innerText = s;
+            clock = setInterval(() => {
+                s--; document.getElementById('timer').innerText = s;
+                if(s <= 0) skipRest();
             }, 1000);
         }
-        function stopRest() { clearInterval(countdown); document.getElementById('timer-overlay').style.display = 'none'; }
-
-        initWorkout();
+        function skipRest() { clearInterval(clock); document.getElementById('rest').style.display = 'none'; }
     </script>
 </body>
 </html>
