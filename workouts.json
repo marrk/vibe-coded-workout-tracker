@@ -1,37 +1,27 @@
 {
-    "schemes": {
-      "pyramid": [
-        { "reps": 12, "pct": 0.90 },
-        { "reps": 10, "pct": 1.00 },
-        { "reps": 10, "pct": 1.00 },
-        { "reps": 8,  "pct": 1.05 }
-      ],
-      "flat": [
-        { "reps": 10, "pct": 1.00 },
-        { "reps": 10, "pct": 1.00 },
-        { "reps": 10, "pct": 1.00 },
-        { "reps": 10, "pct": 1.00 }
-      ]
-    },
-    "workoutA": [
-      { "id": "a1", "name": "30° Incline Bench", "scheme": "pyramid", "rm": 40 },
-      { "id": "a2", "name": "Standing Military Press", "scheme": "pyramid", "rm": 30 },
-      { "id": "a3", "name": "Posterior Delt DB", "scheme": "flat", "rm": 8 },
-      { "id": "a4", "name": "60° Incline DB Press", "scheme": "pyramid", "rm": 18 },
-      { "id": "a5", "name": "Biceps Curl (Wide)", "scheme": "flat", "rm": 20 },
-      { "id": "a6", "name": "Dips (Triceps Focus)", "scheme": "flat", "rm": 0 },
-      { "id": "a7", "name": "Medial Deltoid", "scheme": "flat", "rm": 10 },
-      { "id": "a8", "name": "Triceps Press (Up)", "scheme": "pyramid", "rm": 15 },
-      { "id": "a9", "name": "Rotating Standing Biceps", "scheme": "flat", "rm": 12 }
+  "schemes": {
+    "pyramid": [
+      { "reps": 12, "pct": 0.90 },
+      { "reps": 10, "pct": 1.00 },
+      { "reps": 10, "pct": 1.00 },
+      { "reps": 8,  "pct": 1.05 }
     ],
-    "workoutB": [
-      { "id": "b1", "name": "Squats", "scheme": "pyramid", "rm": 60 },
-      { "id": "b2", "name": "Deadlifts", "scheme": "pyramid", "rm": 80 },
-      { "id": "b3", "name": "Chin ups", "scheme": "flat", "rm": 0 },
-      { "id": "b4", "name": "Split squat", "scheme": "pyramid", "rm": 20 },
-      { "id": "b5", "name": "Bent over row", "scheme": "pyramid", "rm": 40 },
-      { "id": "b6", "name": "Kuiten", "scheme": "flat", "rm": 50 },
-      { "id": "b7", "name": "Inverse fly", "scheme": "flat", "rm": 10 },
-      { "id": "b8", "name": "Onderarmen", "scheme": "flat", "rm": 15 }
+    "flat": [
+      { "reps": 10, "pct": 1.00 },
+      { "reps": 10, "pct": 1.00 },
+      { "reps": 10, "pct": 1.00 },
+      { "reps": 10, "pct": 1.00 }
     ]
-  }
+  },
+  "workoutB": [
+    { "id": "b1", "name": "Squats", "scheme": "pyramid", "rm": 60, "gif": "https://edb-405954.c.cdn77.org/gj0473.gif" },
+    { "id": "b2", "name": "Deadlifts", "scheme": "pyramid", "rm": 80, "gif": "https://edb-405954.c.cdn77.org/gj0430.gif" },
+    { "id": "b3", "name": "Chin ups", "scheme": "flat", "rm": 0, "gif": "https://edb-405954.c.cdn77.org/gj0137.gif" },
+    { "id": "b4", "name": "Bent over row", "scheme": "pyramid", "rm": 40, "gif": "https://edb-405954.c.cdn77.org/gj0027.gif" },
+    { "id": "b5", "name": "Split squat", "scheme": "pyramid", "rm": 20, "gif": "https://edb-405954.c.cdn77.org/gj0030.gif" },
+    { "id": "b6", "name": "Seated Machine Row", "scheme": "flat", "rm": 35, "gif": "https://edb-405954.c.cdn77.org/gj0191.gif" },
+    { "id": "b7", "name": "Machine Calf Press", "scheme": "flat", "rm": 60, "gif": "https://edb-405954.c.cdn77.org/gj1377.gif" },
+    { "id": "b8", "name": "Pec Deck Rear Delt", "scheme": "flat", "rm": 15, "gif": "https://edb-405954.c.cdn77.org/gj0682.gif" },
+    { "id": "b9", "name": "Machine Wrist Curls", "scheme": "flat", "rm": 10, "gif": "https://edb-405954.c.cdn77.org/gj0507.gif" }
+  ]
+}
