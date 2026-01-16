@@ -20,6 +20,14 @@
         .step.done { color: #27ae60; border-color: #27ae60; opacity: 0.4; }
         .info-sub { font-weight: bold; color: #888; font-size: 1.1em; margin: 4px 0; }
         .active .info-sub { color: #fff; }
+.ex-gif {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #333;
+}
 
         /* Controls */
         .control-row { background: #111; border-radius: 20px; padding: 18px; margin-bottom: 15px; border: 1px solid #222; }
@@ -104,7 +112,8 @@
             const sch = data.schemes[ex.scheme];
             const step = sch[setIdx];
             const rm = parseFloat(localStorage.getItem(`rm_${ex.id}`)) || ex.rm;
-
+            // Set the GIF source
+            document.getElementById('ex-gif').src = ex.gif;
             document.getElementById('ex-title').innerText = ex.name;
             document.getElementById('set-count').innerText = `Set ${setIdx+1} of ${sch.length}`;
             document.getElementById('v-w').innerText = (rm * step.pct).toFixed(1);
